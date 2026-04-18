@@ -1,18 +1,17 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 
 export default function LoginForm({ authorizedUsername, onLogin, authError = "", loading = false }) {
   const [username, setUsername] = useState(authorizedUsername);
   const [password, setPassword] = useState("");
-  const [feedback, setFeedback] = useState("");
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setFeedback("");
+    setIsPending(true);
 
-    startTransition(async () => {
+    try {
       const success = await onLogin?.({
         username,
         password,
@@ -23,7 +22,9 @@ export default function LoginForm({ authorizedUsername, onLogin, authError = "",
       }
 
       setPassword("");
-    });
+    } finally {
+      setIsPending(false);
+    }
   }
 
   return (
@@ -31,7 +32,7 @@ export default function LoginForm({ authorizedUsername, onLogin, authError = "",
       <div className="panel-heading">
         <div>
           <p className="eyebrow">Editor Sign-In</p>
-          <h2>Step behind the counter</h2>
+          <h2>Editor login</h2>
         </div>
       </div>
 
@@ -64,7 +65,7 @@ export default function LoginForm({ authorizedUsername, onLogin, authError = "",
           />
         </div>
 
-        {feedback || authError ? <p className="feedback error">{feedback || authError}</p> : null}
+        {authError ? <p className="feedback error">{authError}</p> : null}
 
         <div className="button-row">
           <button className="button" type="submit" disabled={isPending || loading}>

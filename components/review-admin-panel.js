@@ -9,7 +9,6 @@ export default function ReviewAdminPanel({
   reviews,
   reviewsError,
   onSaveReview,
-  isRefreshing = false,
 }) {
   const [editingReviewId, setEditingReviewId] = useState(null);
 
@@ -26,8 +25,8 @@ export default function ReviewAdminPanel({
       <div className="panel editor-panel">
         <div className="panel-heading">
           <div>
-            <p className="eyebrow">Barista's Desk</p>
-            <h2>{reviewToEdit ? "Edit today's note" : "Brew a new review"}</h2>
+            <p className="eyebrow">Editor Workspace</p>
+            <h2>{reviewToEdit ? "Edit a review" : "Add a new review"}</h2>
           </div>
           <p className="table-note">
             Signed in as {authorizedUsername}. Only this account can publish or revise posts.
@@ -40,14 +39,13 @@ export default function ReviewAdminPanel({
           onSaved={() => setEditingReviewId(null)}
           onCancelEdit={() => setEditingReviewId(null)}
           onSaveReview={onSaveReview}
-          isRefreshing={isRefreshing}
         />
       </div>
 
       <div className="panel shelf-panel">
         <div className="panel-heading">
           <div>
-            <p className="eyebrow">Open Shelf</p>
+            <p className="eyebrow">Published Reviews</p>
             <h2>Public review posts</h2>
           </div>
           <p className="table-note">Visitors can read every review. Makedon can edit any post from here.</p>

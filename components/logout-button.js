@@ -1,14 +1,18 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState } from "react";
 
 export default function LogoutButton({ onLogout }) {
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
 
   async function handleLogout() {
-    startTransition(async () => {
+    setIsPending(true);
+
+    try {
       await onLogout?.();
-    });
+    } finally {
+      setIsPending(false);
+    }
   }
 
   return (

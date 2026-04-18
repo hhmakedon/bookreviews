@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 
 const initialForm = {
   title: "",
@@ -15,11 +15,10 @@ export default function ReviewForm({
   onSaved,
   onCancelEdit,
   onSaveReview,
-  isRefreshing = false,
 }) {
   const [form, setForm] = useState(initialForm);
   const [feedback, setFeedback] = useState(null);
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
   const isEditing = Boolean(reviewToEdit);
 
   useEffect(() => {
@@ -56,33 +55,35 @@ export default function ReviewForm({
       return;
     }
 
-    startTransition(() => {
-      Promise.resolve(
+    setIsPending(true);
+
+    try {
+      await Promise.resolve(
         onSaveReview?.({
           ...form,
           id: reviewToEdit?.id ?? null,
         }),
-      )
-        .then(() => {
-          setForm(initialForm);
-          setFeedback({
-            type: "success",
-            text: isEditing
-              ? `Updated "${form.title}" for the public shelf.`
-              : `Saved "${form.title}" to your review shelf.`,
-          });
-          onSaved?.();
-        })
-        .catch((error) => {
-          setFeedback({
-            type: "error",
-            text:
-              error instanceof Error
-                ? error.message
-                : `This review could not be ${isEditing ? "updated" : "saved"}.`,
-          });
-        });
-    });
+      );
+
+      setForm(initialForm);
+      setFeedback({
+        type: "success",
+        text: isEditing
+          ? `Updated "${form.title}" for the public shelf.`
+          : `Saved "${form.title}" to your review shelf.`,
+      });
+      onSaved?.();
+    } catch (error) {
+      setFeedback({
+        type: "error",
+        text:
+          error instanceof Error
+            ? error.message
+            : `This review could not be ${isEditing ? "updated" : "saved"}.`,
+      });
+    } finally {
+      setIsPending(false);
+    }
   }
 
   return (
@@ -153,16 +154,12 @@ export default function ReviewForm({
           {disabled
             ? "Finish Firestore Setup"
             : isPending
-              ? isRefreshing
-                ? "Refreshing shelf..."
-                : isEditing
-                  ? "Updating review..."
-                  : "Saving review..."
-              : isRefreshing
-                ? "Refreshing shelf..."
-                : isEditing
-                  ? "Update Review"
-                  : "Add Review"}
+              ? isEditing
+                ? "Updating review..."
+                : "Saving review..."
+              : isEditing
+                ? "Update Review"
+                : "Add Review"}
         </button>
         {isEditing ? (
           <button
@@ -173,7 +170,7 @@ export default function ReviewForm({
               setFeedback(null);
               onCancelEdit?.();
             }}
-            disabled={isPending || isRefreshing}
+            disabled={isPending}
           >
             Cancel Edit
           </button>
