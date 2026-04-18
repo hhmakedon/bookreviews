@@ -20,8 +20,14 @@ import LoginForm from "@/components/login-form";
 import LogoutButton from "@/components/logout-button";
 import ReviewAdminPanel from "@/components/review-admin-panel";
 import ReviewsTable from "@/components/reviews-table";
-import { auth, db } from "@/lib/firebase-client";
-import { AUTHORIZED_EMAIL, AUTHORIZED_USERNAME } from "@/lib/site-config";
+import SetupPanel from "@/components/setup-panel";
+import { getFirebaseAuth, getFirebaseDb } from "@/lib/firebase-client";
+import {
+  AUTHORIZED_EMAIL,
+  AUTHORIZED_USERNAME,
+  getMissingFirebaseWebConfig,
+  isFirebaseWebConfigReady,
+} from "@/lib/site-config";
 
 function sortReviews(reviews) {
   return [...reviews].sort((left, right) => {
@@ -115,8 +121,18 @@ export default function BookReviewApp() {
   const [reviewsError, setReviewsError] = useState("");
   const [authError, setAuthError] = useState("");
   const [isAuthReady, setIsAuthReady] = useState(false);
+  const firebaseReady = isFirebaseWebConfigReady();
 
   useEffect(() => {
+    if (!firebaseReady) {
+      setReviews([]);
+      setReviewsError("Firebase web configuration is missing.");
+      setIsAuthReady(true);
+      return undefined;
+    }
+
+    const auth = getFirebaseAuth();
+    const db = getFirebaseDb();
     const reviewsQuery = query(collection(db, "reviews"), orderBy("rating", "desc"));
     const unsubscribeReviews = onSnapshot(
       reviewsQuery,
@@ -139,7 +155,7 @@ export default function BookReviewApp() {
       unsubscribeReviews();
       unsubscribeAuth();
     };
-  }, []);
+  }, [firebaseReady]);
 
   const topRating = reviews[0]?.rating ?? null;
   const averageRating =
@@ -150,12 +166,18 @@ export default function BookReviewApp() {
   async function handleLogin({ username, password }) {
     setAuthError("");
 
+    if (!firebaseReady) {
+      setAuthError("Firebase web configuration is missing.");
+      return false;
+    }
+
     if (username.trim().toLowerCase() !== AUTHORIZED_USERNAME.toLowerCase()) {
       setAuthError("Invalid username or password.");
       return false;
     }
 
     try {
+      const auth = getFirebaseAuth();
       await signInWithEmailAndPassword(auth, AUTHORIZED_EMAIL, password);
       return true;
     } catch (error) {
@@ -165,6 +187,11 @@ export default function BookReviewApp() {
   }
 
   async function handleLogout() {
+    if (!firebaseReady) {
+      return;
+    }
+
+    const auth = getFirebaseAuth();
     await signOut(auth);
   }
 
@@ -173,7 +200,12 @@ export default function BookReviewApp() {
       throw new Error("Please log in first.");
     }
 
+    if (!firebaseReady) {
+      throw new Error("Firebase web configuration is missing.");
+    }
+
     const reviewData = validateReviewPayload(payload);
+    const db = getFirebaseDb();
 
     try {
       if (payload.id) {
@@ -202,7 +234,9 @@ export default function BookReviewApp() {
         </div>
 
         <div className="hero-side">
-          {currentUser ? (
+          {!firebaseReady ? (
+            <SetupPanel missingItems={getMissingFirebaseWebConfig()} />
+          ) : currentUser ? (
             <section className="panel auth-panel">
               <div className="panel-heading">
                 <div>

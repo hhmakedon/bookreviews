@@ -9,10 +9,10 @@ const projectId = process.env.FIREBASE_PROJECT_ID;
 const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
 const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
 const email = process.env.AUTHORIZED_EMAIL || "makedon@bookreviews.local";
-const password = process.env.SEED_USER_PASSWORD || "iamsocool1";
+const password = process.env.SEED_USER_PASSWORD;
 const displayName = process.env.AUTHORIZED_USERNAME || "Makedon";
 
-if (!projectId || !clientEmail || !privateKey) {
+if (!projectId || !clientEmail || !privateKey || !password) {
   console.error("Missing Firebase Admin credentials. Fill in .env.local before seeding the auth user.");
   process.exit(1);
 }

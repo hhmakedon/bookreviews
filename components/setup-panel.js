@@ -1,3 +1,5 @@
+"use client";
+
 export default function SetupPanel({ missingItems }) {
   return (
     <section className="panel auth-panel">
