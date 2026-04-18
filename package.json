@@ -1,0 +1,26 @@
+{
+  "name": "bookreviews",
+  "version": "1.0.0",
+  "description": "Mr. Makedon's Book Reviews built with Next.js and Firebase.",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "seed:user": "node scripts/seed-user.mjs"
+  },
+  "keywords": [
+    "nextjs",
+    "firebase",
+    "book-reviews"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "firebase": "^12.12.0",
+    "firebase-admin": "^13.8.0",
+    "next": "^16.2.4",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
+  }
+}
