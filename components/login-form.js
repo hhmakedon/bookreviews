@@ -48,7 +48,7 @@ export default function LoginForm({ authorizedUsername, onLogin, authError = "",
             placeholder={authorizedUsername}
             required
           />
-          <p className="field-note">Readers do not need an account. Only {authorizedUsername} can publish or edit posts.</p>
+          <p className="field-note">Readers do not need an account. Only Mr. Makedon can publish or edit posts.</p>
         </div>
 
         <div className="field">
