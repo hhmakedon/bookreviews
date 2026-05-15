@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 const initialForm = {
   title: "",
   author: "",
-  rating: "5",
+  rating: "10",
   review: "",
 };
 
@@ -30,7 +30,7 @@ export default function ReviewForm({
     setForm({
       title: reviewToEdit.title ?? "",
       author: reviewToEdit.author ?? "",
-      rating: String(reviewToEdit.rating ?? 5),
+      rating: String(reviewToEdit.rating ?? 10),
       review: reviewToEdit.review ?? "",
     });
   }, [reviewToEdit]);
@@ -123,14 +123,14 @@ export default function ReviewForm({
           name="rating"
           type="number"
           min="1"
-          max="5"
+          max="10"
           step="0.1"
           value={form.rating}
           onChange={updateField}
           disabled={disabled}
           required
         />
-        <p className="field-note">Use a 1.0 to 5.0 scale. The list reorders automatically after every save.</p>
+        <p className="field-note">Use a 1.0 to 10.0 scale. The list reorders automatically after every save.</p>
       </div>
 
       <div className="field">

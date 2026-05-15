@@ -99,8 +99,8 @@ function validateReviewPayload(payload) {
     throw new Error("Please enter the author.");
   }
 
-  if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
-    throw new Error("Rating must be a number between 1 and 5.");
+  if (!Number.isFinite(rating) || rating < 1 || rating > 10) {
+    throw new Error("Rating must be a number between 1 and 10.");
   }
 
   if (!review) {
@@ -252,11 +252,11 @@ export default function BookReviewApp() {
                 </article>
                 <article className="summary-card">
                   <span className="status-label">Top rating</span>
-                  <strong>{topRating ? `${topRating.toFixed(1)} / 5` : "No entries yet"}</strong>
+                  <strong>{topRating ? `${topRating.toFixed(1)} / 10` : "No entries yet"}</strong>
                 </article>
                 <article className="summary-card">
                   <span className="status-label">Average score</span>
-                  <strong>{averageRating ? `${averageRating} / 5` : "Waiting for data"}</strong>
+                  <strong>{averageRating ? `${averageRating} / 10` : "Waiting for data"}</strong>
                 </article>
               </div>
             </section>
